@@ -68,7 +68,7 @@
         <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
           <div
             v-for="item in tickets"
-            @click="selected = item"
+            @click="select(item)"
             v-bind:key="item.name"
             v-bind:class="selected == item ? 'border-2': ''"
             class="bg-white overflow-hidden shadow rounded-lg border-purple-800 border-solid cursor-pointer "
@@ -108,7 +108,12 @@
         {{selected.name}} - EUR
       </h3>
       <div class="flex items-end border-gray-600 border-b border-l h-64">
-        <div class="bg-purple-800 border w-10 h-24"></div>
+        <div 
+         v-for="(bar, idx) in normalizeGraph()"
+        :key="idx"
+        :style="{color:'red', height:`${bar}%` }"
+     
+        class="bg-purple-800 border w-10"></div>
       </div>
       <button
         @click="selected = null"
@@ -152,40 +157,44 @@ export default {
   
   data(){
     return{
-      ticket:"",
+      ticket:"".toUpperCase().trim(),
       tickets:[],
       selected:null,
       apiKey:'60f7fec201e76cffe23e2fbf63c2b59c',
-      graphs:[]
+      graph:[]
     }
   },
   methods:{
     addTicket:function(name) {
-       name = name.toUpperCase();
+       name = name.toUpperCase().trim();
 
      this.tickets.push({name, price: " - "});
       setInterval(async()=>{
-        const f = await fetch(`http://data.fixer.io/api/latest?access_key=60f7fec201e76cffe23e2fbf63c2b59c&symbols=${name}`);
+        const f = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${name}&tsyms=USD`);
         const data = await f.json();
-
-        
         const item = this.tickets.find(t => t.name == name)
-        console.log(data.rates[name])
-        item.price = data.rates[name] > 1 ? data.rates[name].toFixed(2) : data.rates[name].toPrecision(2);
-        
-      },2000)
+        console.log(data)
+        item.price = data.USD > 1 ? data.USD.toFixed(2) : data.USD;
+        if(this.selected?.name == name){
+           this.graph.push(data.USD);
+        }
+      },5000)
       this.ticket= ""
     },
     removeTicket:function(item){
      this.tickets =  this.tickets.filter(el=> el != item)
+    },
+    select (ticker){
+      this.selected = ticker
+      this.graph = [];
     },
   
     normalizeGraph(){
       const maxValue = Math.max(...this.graph)
       const minValue = Math.min(...this.graph)
       return this.graph.map(
-        price => 5+((price - minValue) * 95) / (maxValue - minValue)
-      )
+       
+        price => 5+((price - minValue) * 95) / (maxValue - minValue))
     }
   }
 }
