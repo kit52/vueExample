@@ -22,7 +22,7 @@
               id="wallet"
                style="text-transform: uppercase;"
               class=" input-USD block w-full pr-10 border-gray-300 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
-              placeholder="Например USD"
+              placeholder="Например BTC"
             />
           </div>
           <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap">
@@ -39,11 +39,11 @@
               CHD
             </span>
           </div>
-          <div class="text-sm text-red-600">Такой тикер уже добавлен</div>
+          <!-- <div class="text-sm text-red-600">Такой тикер уже добавлен</div> -->
         </div>
       </div>
       <button
-      v-on:click = "addTicket(ticket)"
+        @click="addTicket(ticket)"
         type="button"
         class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
       >
@@ -73,9 +73,9 @@
             v-bind:class="selected == item ? 'border-2': ''"
             class="bg-white overflow-hidden shadow rounded-lg border-purple-800 border-solid cursor-pointer "
           >
-            <div   class="px-4 py-5 sm:p-6 text-center border">
+            <div class="px-4 py-5 sm:p-6 text-center border">
               <dt class="text-sm font-medium text-gray-500 truncate">
-                {{item.name}} - EUR
+                {{item.name}} - USD
               </dt>
               <dd class="mt-1 text-3xl font-semibold text-gray-900">
               {{item.price ? item.price : "-"  }}
@@ -105,14 +105,14 @@
       </template>
     <section v-if = "selected" class="relative">
       <h3 class="text-lg leading-6 font-medium text-gray-900 my-8">
-        {{selected.name}} - EUR
+        {{selected.name}} - USD
       </h3>
       <div class="flex items-end border-gray-600 border-b border-l h-64">
         <div 
          v-for="(bar, idx) in normalizeGraph()"
         :key="idx"
         :style="{color:'red', height:`${bar}%` }"
-     
+        :title="`${graph[idx]}`"
         class="bg-purple-800 border w-10"></div>
       </div>
       <button
